@@ -16,11 +16,5 @@ jobs:
 
       - uses: cvxgrp/.github/actions/latex@main
         with:
-          paper: markowitz.tex
+          paper: book.tex
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Doesn't make sense at this stage. We miss now.clo and also all the plots
-      #- uses: cvxgrp/.github/actions/latex@main
-      #  with:
-      #    paper: kahn_multiperiod_sourcecode/cvx_portfolio.tex
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
