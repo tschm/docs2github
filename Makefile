@@ -9,7 +9,7 @@ help:  ## Display this help screen
 
 .PHONY: compile
 compile: ## Compile document
-	@tectonic markowitz.tex
+	@tectonic book.tex
 
 
 .PHONY: clean
