@@ -1,0 +1,875 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage,graphicx,psfrag,amsmath,amsfonts,verbatim}
+\usepackage[small,bf]{caption}
+\usepackage{amssymb}
+
+\input{defs}
+
+% \usepackage[round]{natbib}
+\bibliographystyle{alpha}
+
+\usepackage{mathtools}
+\usepackage{adjustbox}
+\usepackage{booktabs}
+
+\usepackage{hyperref}
+\hypersetup{ colorlinks   = true,    % Colours links instead of ugly boxes
+urlcolor     = blue,    % Colour for external hyperlinks
+linkcolor    = blue,    % Colour of internal links
+citecolor    = red      % Colour of citations
+}
+
+\title{Making Markowitz Work\\[1ex] (Working Title)}
+\author{Stephen Boyd \footnote{Alphabetical order.}
+\and Kasper Johansson 
+\and Ronald Kahn
+\and Philipp Schiele
+\and Thomas Schmelzer
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Ja, Wir werden einen brauchen.  Eventually.
+\end{abstract}
+
+\clearpage
+\tableofcontents
+\clearpage
+
+\input{sections/introduction.tex}
+
+\section{The original Markowitz problem} XXX Kasper: rewrite per Thomas's
+feedback XXX
+Markowitz~\cite{markowitz1952portfolio} introduced his, now famous, portfolio
+optimization formulation as step two in a two-step process. The first step is
+devoted to the estimation of the expected value $\mu \in \reals^n$ of the
+returns of $n$ assets and the covariance matrix $\Sigma \in \reals^{n\times n}$ of
+these returns. The second step assumes that an investor has a desire to
+maximize the expected return of the portfolio while keeping the risk at a
+minimum. Given $\mu$ and $\Sigma$ Markowitz proposed to solve the following
+optimization problem to find the optimal portfolio weights $w \in
+\reals^n$\footnote{In his first analysis of the problem, Markowitz for
+simplicity and illustrative purposes also assumed a
+long-only constraint, \ie, $w \geq 0$.}:
+\BEQ \label{eq:original-markowitz}
+\begin{array}{ll}
+\mbox{maximize}   &  w^T\mu - \lambda w^T \Sigma w\\
+\mbox{subject to} &  \ones^T w = 1,\\
+\end{array}  
+\EEQ
+with variable $w$, where $\lambda$ is a risk aversion parameter that controls
+the trade-off between risk and return. Here, $ w^T\mu$ denotes the expected
+return of the portfolio, and $w^T \Sigma w$ its variance. There are several equivalent
+formulations of this problem. For example, we could maximize the expected
+return, subject to a maximum variance constraint, $\lambda w^T \Sigma w \leq
+\sigma_{\max}^2$, or we could minimize the variance, subject to a minimum return
+constraint, $w^T\mu \geq \mu_{\min}$. For certain choices of $\lambda,
+\sigma_{\max}$, and $\mu_{\min}$, these problems are all
+equivalent~\cite{boydconvex}. Problem~\eqref{eq:original-markowitz} has the
+analytical solution 
+\[
+w^{\star} = \frac{1}{2\lambda} \Sigma^{-1} (\mu+\nu^{\star}\ones),
+\]
+where
+\[
+\nu^{\star} = \frac{2\lambda - \ones^T \Sigma^{-1}\mu}{\ones^T \Sigma^{-1} \ones}
+\]
+is the optimal dual variable~\cite{boydconvex}.
+
+\subsection{Extensions} 
+The original Markowitz problem~\eqref{eq:original-markowitz} allows the investor
+to maximize her expected return for a certain level of risk. Convex optimization
+allows for many extensions of this problem, like adding constraint on, or penalizing, positions,
+leverage, turnover, etc.
+
+\subsection{Criticisms}
+Markowitz has been heavily criticized for many reasons. Firstly, it has been
+argued to be an estimation-error maximization problem, meaning that it
+overemphasizes assets with high estimation errors. It has also been argued that
+it relies on sample estimates of the mean and covariance matrix, which are
+suboptimal~\cite{michaud1989markowitz_enigma}. (Although this second criticism
+relates to the first step of the two-step process, and not to the part that
+Markowitz actually tried to solve.) Another criticism is that the optimizer does
+not take into account differences in uncertainties of the mean
+and covariance estimates of different assets. For example, an estimate of the return of an
+equity return may be much more uncertain than the return estimate of a growth
+factor. Other critics argue that mean-variance
+optimizers can be unstable, that solutions may be non-unique, or that XXX look
+into more sources. This is mostly based on Michaud's paper from 1989; a lot has
+changed XXX XXX Target missing factors and non-financial structure XXX 
+
+Although some of these criticisms are valid when taken at face value, this paper
+will illustrate how to avoid them completely in practice, when doing Markowitz
+right. 
+
+
+
+\section{The Markowitz problem}
+
+\subsection{Notation}
+
+Our notation is close to the notation in \cite{BoydKahnMultiPeriod},
+with the exception that we use separate notation for the non-cash and cash investments.
+We also drop the subscript $t$ which denotes time period, and 
+use it only when we are discussing simulation and backtesting.
+
+\paragraph{Portfolio weights.}
+We consider a portfolio consisting of investments (possibly long and short)
+in $n$ assets, plus a cash account.
+To describe the portfolio, we will work with the weights or fractions
+of the total portfolio value for each asset. We denote
+the weights for the assets as $w_i$, $i=1, \ldots, n$, and collect them 
+into a portfolio weight vector $w =(w_1, \ldots, w_n)\in \reals^n$.
+We denote the weight for the cash account as $c$, and the total
+portfolio value (assumed positive) as $V$.
+We interpret $w_i$ (or $c$) as the fraction of the total portfolio value $V$
+held in asset $i$ (or cash).
+The entries of $w$ can be negative, indicating a short position.
+If $c$ is negative, it represents a loan.
+The dollar value of asset $i$ held is $Vw_i$, and the dollar value of 
+the cash account is $Vc$.
+By definition we have 
+\[
+\ones^T w + c = 1,
+\]
+where $\ones$ is the vector
+with all entries one. That is, the asset weights plus the cash weight sum to one.
+We can express the cash weight in terms of the asset weights as $c=1-\ones^T w$.
+
+We mention a few important concepts related to the weights.
+A \emph{long-only} portfolio corresponds to all entries of $w$ being nonnegative,
+which we write as $w \geq 0$ (which means elementwise).
+
+The $130-30$ portfolio used to be a popular portfolio, see \cite{leibowitz2009modern}.
+Here we sell $0.3 \times V$ by entering a short position to finance a $1.3 \times V$ long position.
+This corresponds to the constraints $w^T \ones = 1.0$ but $\sum_{i=1}^n |w_i| = 1.6$.
+We define the latter term as the \emph{leverage} of the portfolio, and denote it by $L$
+\[
+L = \sum_{i=1}^n |w_i| = \|w\|_1.
+\]
+(Several other closely related definitions are also used. Our definition is
+commonly referred to as the \emph{gross leverage} \cite{ANG2011102}.)
+
+Constraints on the leverage will be helpful to tame \emph{cash-neutral} portfolios
+where $w^T \ones = 0$, $c=1$ and $L > 0$. Here the size of the long position is equal
+to the size of the short position.
+
+\paragraph{Gross portfolio return.}
+We let $r_i$ denote the return of asset $i$ over the investment period.
+We collect these asset returns into a return vector 
+$r=(r_1, \ldots, r_n)\in \reals^n$.
+These returns are adjusted for dividends, splits, and other corporate 
+actions.
+The portfolio return from asset $i$ is $r_i w_i$.
+We let $r^\mathrm{rf}$ denote the risk-free interest rate, so the return in
+the cash account is $r^\mathrm{rf}c$.
+The (gross) total portfolio return is then 
+\[
+R = r^T w + r^\mathrm{rf} c.
+\]
+This gross return does not include costs such as borrowing cost (for assets or 
+cash) or transaction costs, described below.
+
+\paragraph{Benchmark.}
+In some cases our focus is on portfolio performance 
+relative to a benchmark portfolio.  We let $w^\mathrm{b}$ denote the weights of
+the benchmark.  Typically the benchmark does not include any cash weight, \ie,
+the benchmark cash weight is zero, so $\ones^T w^\mathrm{b} = 1$.
+We refer to $w-w^\mathrm{b}$ as the \emph{active} weights of our portfolio.
+The \emph{active portfolio return}, \ie, its return relative the benchmark, is 
+\[
+r^T w + r^\mathrm{rf} c - r^T w^\mathrm{b} = r^T (w-w^\mathrm{b}) + r^\mathrm{rf} c.
+\]
+
+\paragraph{Trades.}
+We let $w_-$ and $c_-$ denote the pre-trade portfolio weights, \ie, the
+portfolio weights before we carry out the trades to construct the portfolio
+given by $w$ and $c$.
+We will need these weights to incorporate transaction costs in the Markowitz formulation.
+We refer to $z=w-w_-$, the current weights minus the previous ones,
+as the (vector of) trades or the trade list.  Since $\ones^T w_- + c_-=1$, we have 
+\[
+c = c_- - \ones^T z,
+\]
+\ie, the post-trade cash weight is the pre-trade cash weight minus the total
+weight of the trades.
+
+The quantity
+\[
+T = \sum_{i=1}^n |z_i| = \| z\|_1
+\]
+is the \emph{turnover}.  (Here too several other different but closely related 
+definitions are also used.)
+
+\subsection*{Intermezzo}
+We can already glimpse the Markowitz summit in the distance.
+
+Our goal in portfolio construction is to choose the weights $w$ such that the
+expected return after costs is maximized,
+subject to constraints on the risk and the trading activity.
+\[
+\arg \max r^T w + r^\mathrm{rf} c - \mathrm{costs}(w, w_0)
+\]
+subject to
+\[
+    \mathrm{risk} \leq \mathrm{risk budget} \\
+    \mathrm{trading} \leq \mathrm{trading budget} \\
+    \mathrm{Constraints on the weights}
+\]
+Already in this naive formulation we may run into problems.
+The risk may spike up and the trading required to get the risk below its threshold
+may be too large.
+
+%Constraints on the weights may help to reduce or boost
+%the correlation to the underlying market.
+%Trading a long only and diversified portfolio of S \& P stocks
+%will result in a portfolio with an unavoidable high correlation
+%to the index.
+
+%In the next sections we make our formulation more precise and introduce
+%models for risk and trading.
+
+
+\subsection{Soft and hard constraints}
+We classify constraints into soft and hard.
+Hard constraints simply must be satisfied.
+For example, if the portfolio must be long-only, then $w\geq 0$
+is a hard constraint.
+
+Using several hard constraints will often yield infeasible problems, e.g. a dramatic
+change in our risk estimation may require trading beyond the limit for its activity.
+There is an entire industry solving problems such as
+\[
+   \arg \max r^T w + r^\mathrm{rf} c - \lambda \mathrm{risk}(w)
+\]
+subject to
+\[
+    \mathrm{trading} \leq \mathrm{trading budget} \\
+    \mathrm{Constraints on the weights}
+\]
+XXX: Thomas needs to learn LaTeX again
+
+There people perform backtests to identify suitable values for the risk aversion
+parameter $\lambda$ to end up with a portfolio somewhat close to the desired risk
+level. We will not pursue this indirect approach here.
+
+%We replace hard constraints with a combination of a soft objective with a far less restrictive hard constraint.
+We will instead use a standard form for a \emph{soft constraints} which is a combination
+of an objective with a far less restrictive hard constraint. It requires
+to specify a target value for the objective, a limit value, and a priority.
+
+%which specify for the objective
+%a target value, a limit value, and a priority.
+Consider an objective $f\in \reals$ such as risk for which
+smaller values are better than larger values, \ie, we wish to minimize it.
+(We will see below how the ideas can be transcribed to
+objectives that we wish to maximize or remain in an interval.)
+
+To capture our wishes and requirements for $f$, we give three
+numbers, described below.
+\BIT
+\item The \emph{target value} $f^\mathrm{tar}$ is one that would satisfy us;
+no effort should be expended
+to push the value of $f$ below $f^\mathrm{tar}$.
+\item The \emph{limit value} $f^\mathrm{lim}$ is the maximum value we can tolerate, \ie,
+$f \leq f^\mathrm{lim}$ is a (hard) constraint.
+\item The \emph{priority} $\omega>0$ tells us how much to weight values of $f$
+between $f^\mathrm{tar}$ and $f^\mathrm{lim}$ when combining with other
+objective terms.
+\EIT
+As an example, suppose that $f$ represents the annualized risk of a portfolio.
+We might set a target value of 5\%, meaning that if the risk comes in under
+this value, we don't care. We might set a limit of 15\%, which means we should
+never construct a portfolio with a risk exceeding 15\%.
+
+For an objective $f$ we wish to minimize we have $f^\mathrm{tar} < f^\mathrm{lim}$.
+We associate with it a cost term
+\[
+\varphi = \omega \frac{(f-f^\mathrm{tar})_+}{f^\mathrm{lim}-f^\mathrm{tar}},
+\]
+and the (hard) constraint $f \leq f^\mathrm{lim}$.
+The cost term is the priority $\omega$ multiplied by the fraction
+of the way $f$ is between the target and the limit.
+The cost term varies between $0$ and $\omega$.
+The smaller $\varphi$ is, the happier we are.
+
+For an objective $f$ that we wish to maximize we create the cost term
+\[
+\varphi = \omega \frac{(f^\mathrm{tar}-f)_+}{f^\mathrm{tar}-f^\mathrm{lim}},
+\]
+where in this case $f^\mathrm{tar} > f^\mathrm{lim}$, and hard constraint
+$f \geq f^\mathrm{lim}$.
+Here too $\varphi$ lies between $0$ and $\omega$,
+and the smaller $\varphi$ is, the happier we are.
+As an example, suppose $f$ represents annualized expected return.
+Here we might set a limit
+(in this case, minimum acceptable value) of $2\%$, and a target of $15\%$.
+This means we will not accept any portfolio with expected return less than 2\%,
+and will be fully satisfied with any expected return exceeding $15\%$.
+
+Introducing soft constraints for both risk and trading activity the
+risk of an infeasible problem is dramatically reduced but still a theoretical possibility.
+
+XXX: Warning if $\omega$ is chosen too small the solver may ignore the target value
+as exceeding it by an amount $c$ will result in expected return $r > c$.
+
+XXX: Language. RELU function?
+
+\subsection{Portfolio construction}
+\paragraph{Portfolio construction problem.}
+Our goal in portfolio construction is to choose $w$, which indirectly gives us 
+the trades via $z=w-w_-$, and cash weight via $c=1-\ones^T w$.
+
+\paragraph{What we know.}
+When we choose $w$ we do not know the return $r$, but we have a 
+statistical model of it, based on a forecast.  
+This also holds for several other quantities, such as the
+trading volume and the bid-ask spread over the trading period,
+both of which affect the transaction cost, described below.
+
+\paragraph{Objectives and constraints.}
+Our goals and requirements for portfolio construction can be divided into
+two groups.
+\BIT
+\item \emph{Holding objectives and constraints}
+depend on the asset and cash weights $w$ and $c$.
+They include our (forecast) return and risk, and
+limits on positions and exposures.
+\item \emph{Trading objectives and constraints}
+depend on the trades $z$.
+They include transaction costs and turnover limits.
+\EIT
+
+%\paragraph{Soft and hard constraints.}
+%We classify constraints into soft and hard.  Hard constraints simply must be
+%satisfied.  For example, if the portfolio must be long-only, then $w\geq 0$
+%is a hard constraint.
+
+%Soft constraints or soft goals are associated with an objective quantity
+%that we wish to be large or small, or in some range.
+%An example might be a constraint on exposure to some
+%sector, which we would like to be between $\pm 3\%$, but if needed, we will
+%accept some violation.
+
+
+\subsection{Target-limit-priority specifications}
+We will use a standard form for soft constraints, which specify for the objective
+a target value, a limit value, and a priority.
+Consider an objective $f\in \reals$ such as risk for which
+smaller values are better than larger values, \ie, we wish to minimize it.
+(We will see below how the ideas can be transcribed to
+objectives that we wish to maximize or remain in an interval.)
+
+To capture our wishes and requirements for $f$, we give three
+numbers, described below. 
+\BIT
+\item The \emph{target value} $f^\mathrm{tar}$ is one that would satisfy us;
+no effort should be expended
+to push the value of $f$ below $f^\mathrm{tar}$.
+\item The \emph{limit value} $f^\mathrm{lim}$ is the maximum value we can tolerate, \ie,
+$f \leq f^\mathrm{lim}$ is a (hard) constraint.
+\item The \emph{priority} $\omega>0$ tells us how much to weight values of $f$
+between $f^\mathrm{tar}$ and $f^\mathrm{lim}$ when combining with other
+objective terms.
+\EIT
+As an example, suppose that $f$ represents the annualized risk of a portfolio.
+We might set a target value of 5\%, meaning that if the risk comes in under 
+this value, we don't care.  We might set a limit of 15\%, which means we should 
+never construct a portfolio with a risk exceeding 15\%.
+
+For an objective $f$ we wish to minimize we have $f^\mathrm{tar} < f^\mathrm{lim}$.
+We associate with it a cost term
+\[
+\varphi = \omega \frac{(f-f^\mathrm{tar})_+}{f^\mathrm{lim}-f^\mathrm{tar}},
+\]
+and the (hard) constraint $f \leq f^\mathrm{lim}$.
+The cost term is the priority $\omega$ multiplied by the fraction 
+of the way $f$ is between the target and the limit.
+The cost term varies between $0$ and $\omega$.
+The smaller $\varphi$ is, the happier we are.
+
+For an objective $f$ that we wish to maximize we create the cost term
+\[
+\varphi = \omega \frac{(f^\mathrm{tar}-f)_+}{f^\mathrm{tar}-f^\mathrm{lim}},
+\]
+where in this case $f^\mathrm{tar} > f^\mathrm{lim}$, and hard constraint
+$f \geq f^\mathrm{lim}$.
+Here too $\varphi$ lies between $0$ and $\omega$,
+and the smaller $\varphi$ is, the happier we are.
+As an example, suppose $f$ represents annualized expected return.  
+Here we might set a limit 
+(in this case, minimum acceptable value) of $2\%$, and a target of $15\%$.
+This means we will not accept any portfolio with expected return less than 2\%,
+and will be fully satisfied with any expected return exceeding $15\%$.
+
+Finally, consider a case where we wish $f$ to lie in the range XXX.
+XXX break into two terms, one for the lower limit and one for the upper limit.
+Special case: a target value.
+
+As an example consider our portfolio exposure to the market, which we wish to be
+zero, or at least, small.  For such a soft constraint we have cost term
+$\omega |f|$, and hard constraint $|f|\leq f^\mathrm{max}$.
+
+Our overall problem will have
+$K$ different soft constraints, labeled $k=1, \ldots, K$,
+with objective values $f_1, \ldots, f_K$.
+For each of these we specify target values $f^\mathrm{tar}_k$, 
+limit values $f^\mathrm{lim}_k$, and priorities $\omega_k$.
+The individual cost terms are summed into an overall objective as
+\[
+\varphi = \sum_{k=1}^K \varphi_k.
+\]
+We will minimize $\varphi$ subject to the constraints to find our portoflio.
+
+\subsection{Portfolio construction inputs}
+Our portfolio construction method requires several data to run.  These 
+can be classified into forecasts of quantities that are not known at construction time,
+and parameters that specify our objectives and constraints.
+
+Forecasts:
+\BIT
+\item return forecast $\alpha$
+\item risk model $\Sigma$, typically given as factor model
+\item bid-ask spreads,
+volatility, and trading volume (needed to specify transaction costs)
+\EIT
+
+Parameters specify the hard constraints, as well as the parameters
+needed to specify the soft constraints, \ie, target, limit, and priority.
+\BIT
+\item target risk level
+\item limits on weights and factor exposures
+\item limits on trades, \eg, turnover
+\item limits on liquidation cost
+\EIT
+
+
+\paragraph{Return.}
+
+$\alpha^T w + r^\mathrm{rf} c$
+
+Here $\alpha$ is an estimate of the return of the assets.
+
+Can add an uncertainty band for the return and do worst-case return.
+
+\paragraph{Risk.}
+XXX be sure to mention diffference between using adjusted return 
+and our method which uses a soft constraint for risk.
+
+$\Sigma$ is an estimate of the covariance of $r$.
+
+The risk is $w^T\Sigma w$.  Its squareroot is the volatility of portfolio return,
+and both more interpretable and better behaved numerically.  We will work with
+that.  
+\[
+\sigma = \sqrt{w^T \Sigma w} = \|\Sigma^{1/2}w \|_2,
+\]
+where $\Sigma^{1/2}$ is a squareroot of $\Sigma$, \eg, its Cholesky factor.
+
+\paragraph{Factor risk model.}
+We will use a factor form for $\Sigma$.  Define $F$, $\Sigma^\mathrm{f}$, $D$.
+Let $f$ denote the factor return.
+
+Risk can be expressed as 
+\[
+\sigma = \left\| (\| (\Sigma^\mathrm{rf})^{1/2} f \|_2, \|D^{1/2}w\|_2 ) \right\|_2
+\]
+
+Risk uncertainty; see Kahn paper.
+
+\paragraph{Holding costs.}
+
+\paragraph{Trading costs.}
+
+\clearpage
+Markowitz \cite{markowitz1952portfolio} understood his contribution as the second step in a process
+where the first step is to estimate the expected returns.
+A lot of practitioners leave money on the table by investing all their efforts into estimating
+the expected returns but rely on rather naive methods to construct the portfolio.
+Needless to say that the construction of expected returns is often done using
+a convex optimization problem combining several standard estimators per asset.
+
+XXX This method is known as Maximum Diversification and has been introduced
+by Choueifaty, Coignard and Reynier\cite{choueifaty2011toward}.
+
+\subsection{The expected risk}
+
+The expected risk is a non-negative measure to quantify the risk of a portfolio,
+see \cite{delbaen2002coherent} for a deeper discussion.
+The most common measure is the expected variance of the portfolio, \eg
+\[
+\sigma^2 = \Expect[(w^T r - \mu)^2] = \Expect[(w^T r - w^T \mu)^2] = w^T \Sigma w
+\]
+where
+\[
+    \Sigma_{i,j} = \Expect[(r_i - \mu_i)(r_j - \mu_j)^T]
+\]
+are the elements of the variance-covariance matrix $\Sigma$.
+
+\paragraph{Soft constraints.}
+as described in~\cite[\S4.2]{BoydKahnMultiPeriod}.
+
+
+\subsection{Costs and trade impact}
+
+An accurate reflection of expected costs and trade impact is most crucial in particular
+for large portfolios or portfolios with high turnover. Typically, the costs are
+usually cited as a percentage of the traded value. More relevant for our purposes
+is the trade impact, which is the change in price due to the trade. This is a direct
+consequence of our market order eating into the order book. The trade impact is
+usually modeled as a function of the trade size, the volatility of the asset and
+the relative volume of the trade.
+
+Note that a linear trade impact model should be avoided as it is not realistic
+but has no negative effect on a growing portfolio size. A quadratic model is usually
+to harsh on large orders and is not realistic either. We go for the more
+releastic model in spirit of Almgren and Chriss~\cite{almgren2000optimal} and scale with $p=3/2$
+(There is a lot in Grinold on Kahn on the sqrt rule?)
+
+We also offer users the flexibility to implement their own models for costs and
+trade impact via inheritance as long as they are convex.
+
+For the experiments in this paper we use the following model for the trade impact
+...
+
+\subsection{Holding objectives and constraints}
+We want to express preferences and limits for the constructed portfolio which
+depend on the weights $w$ and the cash weight $c$. A basic holding constraint
+is derived from our definition of the portfolio weights $w$ and the cash weight,
+requiring that the sum of asset weights and the cash weight is equal to one,
+\ie, $\ones^T w + c = 1$. This constraint has to be satisfied for any portfolio
+and is therefore a hard constraint. Most other constraints can, depending on the
+application, be expressed either as pure preferences in the objective,
+soft constraints, or hard constraints. We will therefore describe holding
+objectives and constraints generally as functions of $w$ and $c$, denoted by
+$\phi^{\text{hold}}(w, c)$. We give some examples of common holding objectives
+and constraints below.
+
+\paragraph{Expected return.}
+TODO(Philipp): I can add highly condensed description of each paragraph below
+if we like the format
+
+\paragraph{Risk.}
+
+\paragraph{Lower and upper bounds.}
+
+\paragraph{Leverage limit.}
+
+\paragraph{Group bounds.}
+
+\paragraph{Factor exposures.}
+
+\paragraph{Other constraints.}
+There are many other constraints that may be useful in practice.
+Generally, when $\phi^{\text{hold}}(w, c)$ is a convex function
+To give some examples, we may want to limit the concentration of the portfolio,
+\eg, by requiring that the sum of the largest $k$ weights is smaller than a
+certain value. Other examples include tracking error to a benchmark,
+
+\subsection{Trading objectives and constraints}
+Here we define $\phi^{\text{tc}}(z)$.
+
+\subsection{Linear constraints and factor models}
+
+Factor risk models use the projection of the asset returns into a lower
+dimensional subspace, \eg each asset is the linear combination of $k$ factors.
+\[
+r_i = \sum_{j=1}^k x_j \beta_{ji} + \epsilon_i
+\]
+The factor time series are $x_1, \ldots, x_k$ with $k < n$
+The loadings are the coefficients $\beta_{ij}$.
+The residual returns $\epsilon_i$ are assumed to be uncorrelated with the factors.
+\[
+  R = X \beta^T + \epsilon
+\]
+Any position $w$ in weight space projects to a position $f = \beta^T w$ in factor space.
+Similar to the portfolio weights, we can use linear constraints to restrict
+the position in factor space, \eg we can limit the exposure
+to individual factors or groups of factors.
+
+The variance for a position $w$ is the sum of the variance of the
+systematic returns explained by the factors and the variance of the idiosyncratic returns.
+
+\[
+\var(r) = \var(X \beta^T w) + \var(\epsilon w)
+\]
+We assume the residual returns are uncorrelated and hence
+\[
+\var(r) = y^T \Sigma_f y + \sum_i w_i^2 \var(\epsilon_i)
+\]
+where $\Sigma_f$ is the covariance matrix of the factors and $\var(\epsilon_i)$
+is the variance of the idiosyncratic returns.
+
+There are two popular approaches to construct factor risk models in practice.
+The more fundamental approach is the user providing the factor covariance matrix $\Sigma_f$,
+the loadings $\beta$ and the volatilities of the idiosyncratic returns $\epsilon_i$.
+Often such data is provided by external parties, e.g. Barra or Axioma.
+
+In the second variant the user provides the factor time series $x_1, \ldots, x_k$, usually obtained from
+a principal component analysis (PCA) of the asset returns. The loadings $\beta$ are computed
+via a linear regression of the asset returns on the factor time series.
+The volatilities of the idiosyncratic returns $\epsilon_i$ are computed as the standard deviation
+of the residuals of the linear regression.
+The factor covariance matrix $\Sigma_f$ may even be diagonal in this case as the factors are orthogonal.
+
+
+%The reason is that the expected return and the expected risk are not on the same scale.
+
+
+%Max expected return with risk constraint
+%Make it an inequality constraint, not an equality constraint, to enforce convexity
+%Do not use Max Expected return - lambda * risk
+
+%Use weights (fraction of capital)
+
+%Variation:
+%Max a (w - w0)
+%where w0 is given. outperform some index or benckmark
+
+
+
+%Lower and upper bounds on w (\eg, long only)
+
+%Linear constraint like sum w = 1 (fully invested)
+
+%or sum w = 0 (to be cash neutral).
+
+%Establish factors as F*w=f     (F is the factor matrix, it is wide)
+
+%upper and lower constraints on f
+
+%control exposure to countries, sectors, etc
+
+%Constraints on leverage
+
+%sum abs(w) <= C
+
+%Keep an inequality for convexity of the feasible domain
+
+Penalties in objective for trading impact and holding costs.
+
+Loads of research on trade impact
+
+%Numerous ideas to estimate risk, see cvxrisk
+
+Emphasize that this framework is rather versatile although it does not cover all 
+thinkable applications.
+It covers everything we have seen in practice
+
+\subsection{The general problem}
+Below we describe the general problem that we want to solve. It includes
+many common portfolio construction problems as special cases, some of which
+we will point out explicitly.
+
+% Still missing: factors, robust risk/return
+\begin{equation}
+\begin{array}{ll}
+\mbox{maximize}   &  w^T\mu - \lambda (\sigma - \sigma^{\text{target}})_+ -
+\gamma^{\text{hold}}\phi^{\text{hold}}(w) - \gamma^{\text{tc}}\phi^{\text{tc}}(w)\\
+\mbox{subject to} &  \ones^T w = 1,\\
+                  &  \|w_{1:n}\|_1 \leq L_{\max},\\
+                  &  \|\Sigma^{1/2} w\|_2 \leq \sigma,\\
+                  &  \sigma \leq \sigma^{\text{limit}},\\
+                  &  w \in \mathcal{W},\\
+\end{array}
+\label{eq:general}
+\end{equation}
+
+where the optimization variable is the portfolio weights $w \in \R^n$, and
+$\sigma \in \reals_+$ is an auxiliary variable. The parameters of the problem
+are the expected returns $\mu \in \R^n$, the covariance matrix $\Sigma \in \symm^n_+$,
+the target volatility $\sigma^{\text{target}} \in \reals_+$, the maximum
+volatility $\sigma^{\text{limit}} \in \reals_+$, the maximum leverage
+$L_{\max} \in \reals_+$, as well as the priorities $\lambda \in \reals_+$,
+$\gamma^{\text{hold}} \in \reals_+$, and $\gamma^{\text{tc}} \in \reals_+$ of
+the risk, holding cost, and transaction cost terms, respectively. Additional
+constraints on the weights, such as asset specific upper and lower bounds, as
+well as group constraints, are encoded in the convex set $\mathcal{W}$.
+We also allow some weight constraints to be soft, in which case we replace
+the corresponding constraints with penalties in the objective function.
+The functions $\phi^{\text{hold}}$ and $\phi^{\text{tc}}$ are convex functions
+that model the holding costs and transaction costs.
+
+
+\section{Some crazy ideas}
+
+Here's what a portfolio construction method is supposed to do.
+It should handle constraints (\eg, long only), and trade off risk,
+return, transaction cost, and holding cost (typically shorting cost).
+It will evidently have several hyperparameters, that allow the user
+to choose particular trade-offs among these objectives.
+These can be chosen by hand, or by hyperparameter search, as described below.
+
+First some general ideas about using an optimizer in a policy.
+\BIT
+\item You do not really want to solve the optimization problem.  It is only a surrogate
+for what you want to do, which is create a trading policy that does well, doesn't trade too much or 
+expose you to excessive risk, all on unseen (out of sample) data.
+Same story in every field that uses optimization, \eg, machine learning, control, prediction.
+\item This means that don't need to worry about the terms or constraints in the problem being `accurate'.
+Typical idea is to start with a form that is roughly what you want (say, quadratic risk), and scale 
+it up and down with a hyper-parameter.
+\EIT
+
+\paragraph{Safety fencing.}  You put in constraints that you don’t expect to be tight;
+they are there just to keep us out of trouble.  Each of these constraints comes
+with an alarm; if they ever are tight, someone gets beeped/paged!  Examples:
+limits on individual positions, limits on factor exposures (even if the factors
+are already in the risk model). Could even add diversification constraints such
+as no more than 20\% of the portfolio can be concentrated in 5 names or fewer.
+
+(We should be able to do this in CVXPY, because it’s a general thing.)
+
+\paragraph{Regularization of data.}  Want to be robust to errors in estimating $\mu$ and
+$\Sigma$.  Ideally, we should be able to handle a nominal $\Sigma$ that is
+singular. Assertions that throw and exception if some data is way outside a
+reasonable range (eg, crazy returns, covariances, volumes, bid-ask spreads, …)
+Much written about how to estimate covariances, means for Markowitz.  Black Litterman.
+
+Winsorize.  Use robust estimator losses like Huber.
+
+\paragraph{Cleanup phase.}   Minimum nonzero trade/holdings.  Max number of
+trades or names.  Integer lots numbers.  Fix cost for transactions.
+No need for silly global mixed integer -- two passes of convex are just fine.
+Say why!
+
+\paragraph{Fast backtest.}  We can solve realistic portfolio optimization problems in 10
+or 10s of ms.  So 1 4 year daily backtest costs around 10s, single thread.  Now
+run 64 backtests in parallel on a machine with 64 hyper threads, and go to
+lunch for one hour.   Congratulations; you just did 23000 backtests.   That’s a
+lot of hyper-parameter exploring you can (and should!) do. These could be done
+without some constraints such as the cleanup.  For the few that are
+interesting, you can rerun them in high accuracy mode.   Another option is to
+differentiate through the optimizer to get some kind of gradient w.r.t.
+hyperparameters.   We can also mention parameters in CVXPY and also CVXPYgen.
+
+It would be fun to have with this a reference implementation (in CVPXY, of
+course), that actually works really well.  I don’t see why we couldn’t do that.
+
+I’ve never looked at commercial portfolio construction tools like Axioma.  But
+I know BLK’s one, and it’s terrible and very slow.
+
+\paragraph{Backtests.}
+Super important: adjusting hyper-parameters via backtest.
+
+
+
+
+\paragraph{What if experiments.}
+Should also do peridioc what-if experiments, where you go back 4 months, say,
+and change some hyper-paramters and see where you'd be today had you used those values.
+
+\paragraph{Kalman filters and linear quadratic control.}
+One analogy we can make is to the Kalman filter or linear quadratic control.   
+These are used EVERYWHERE
+and very successfully.  If you read a theory book about it and implement the
+algorithm it will never work.  But with just a few tricks (not too far from the
+ones we are going to describe), they work super well in practice. No one whines
+about “Kalman filters don’t work unless you get the noise covariance right”.
+(In any case, that's completely false.  The issue is not getting an `accurate' noise or 
+process covariance; the issue is getting an \emph{appropriate} one.
+Instead, people just know what to do.   Markowitz seems very similar to us. You
+have to know some tricks, if you want to make it work in practice.
+
+\paragraph{Beware the shiny new method.}  Your colleagues/clients will tell you “no one
+uses Markowitz anymore. Instead they use XX, YY, or ZZ methods”.  Our advice:
+Do not believe them.  No, you do not need CVaR or a sampling based method (in
+practice) or even, likely, a multi-period formulation.
+Or the objective of the month like Sortino half downside risk, or
+blah blah.   
+
+Linear quadratic control flies all airplanes, quite safely and
+well, thank you; in a similar way, Markowitz is just fine for portfolio
+construction.
+
+\paragraph{Let the optimizer do its job.}   One of its jobs is to
+control risk; another is control turnover/t-cost.  Let it do it; don’t smooth your
+signal or complain that a colleagues mean prediction `has too much turnover' or `too much risk'. 
+
+\paragraph{Work with weights.}
+In the optimizer, work with weights that sum to one, not shares or dollar values.  For
+some purposes it doesn’t matter (\eg, leverage); for others (3/2 power transaction
+costs) it does.  Adjust things in the solver to work with weights by passing in
+the total portfolio value.  Outside the solver, feel free to use common and
+sensible units like shares or dollar values.  Just not in the code of the
+optimizer.
+
+\section{Input data}
+
+\paragraph{Covariance estimation.}  Can be fancy, but very simple ones work just as well, 
+and with much less babysitting.
+
+\paragraph{Mean estimation.}  This is the secret sauce. Mention some simple ones?
+
+\paragraph{Volatility estimation.}  (Used for t-cost.) See covariance estimation.
+
+\paragraph{Volume estimation.}  (Used for t-cost.)  Average trailing is just fine.
+
+\paragraph{Bid-ask spread cost.}  (Used for t-cost.) Use true one or just make it up.
+
+\section{Technology}
+
+To support our ideas we have implemented a dedicated Python package
+for portfolio construction. The cvxmarkowitz package is built on top of the cvxpy package \cite{cvxpy}.
+Our core design principle has been to hide the complexity of the subject behind
+a rather intuitive interface. The package is open source and available on GitHub.
+
+In particular, we take advantage of the new features of cvxpy 1.4?  enabling the smart
+caching of problems. This allows us to solve problems as discussed here in a few milliseconds.
+We discuss the technical details of the implementation in an alternative paper.
+
+We shall emphasize that the package provides a degree of flexibility not discussed in this paper,
+e.g., if you prefer a customized risk model, or a different trade impact model, etc. you
+could integrate all such requirements using inheritance from the base classes provided by the package.
+
+\section{Back-testing and parameter selection}
+
+A backtest is a simulation of a trading strategy using historical data.
+We loop through time and at each time step we solve the portfolio optimization problem
+using historic or artificial price data.
+This loop is independent of the allocation
+scheme for the portfolio.
+We can use the same loop for a Markowitz portfolio,
+but we could also reuse it for evaluating the performance of a monkey throwing darts
+on a board with names of stocks.
+
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+
+from cvx.simulator.builder import builder
+
+prices = pd.read_csv("price.csv", index_col=0, parse_dates=True, header=0).ffill()
+b = builder(prices=prices, initial_cash=1e6)
+
+for t, state in b:
+    # pick two assets at random
+    pair = np.random.choice(b.assets, 2, replace=False)
+    # compute the pair
+    stocks = pd.Series(index=b.assets, data=0.0)
+    stocks[pair] = [state.nav, -state.nav] / state.prices[pair].values
+
+    # update the position, 10% of the nav long, 10% short
+    b[t[-1]] = 0.1 * stocks
+
+# build the portfolio
+portfolio = b.build()
+\end{verbatim}
+Explain the source code? Better environment for source code?
+
+The constructed portfolio object opens the door to further analytics wide.
+We are using the cvxsimulator package here. CITATION?
+
+
+\input{sections/conclusions.tex}
+
+
+\clearpage
+\bibliography{refs}
+
+\clearpage
+\appendix
+
+\end{document}
