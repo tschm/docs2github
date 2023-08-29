@@ -4,8 +4,6 @@
 
 Companion [Python package](https://github.com/cvxgrp/cvxmarkowitz)
 
-
 ## Abstract
 
 Blah Blah
-
