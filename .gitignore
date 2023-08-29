@@ -2,6 +2,7 @@
 .venv
 tectonic
 book/_build/html
+book/_build
 
 
 ### LaTeX ###
