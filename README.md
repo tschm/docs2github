@@ -1,5 +1,1 @@
-# [markowitz](https://github.com/cvxgrp/markowitz/blob/draft/markowitz.pdf)
-
-## Abstract
-
-Blah Blah
+# [markowitz](https://github.com/tschm/docs2github/blob/gh-pages)
