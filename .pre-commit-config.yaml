@@ -23,4 +23,3 @@ repos:
       - id: markdownlint-fix
         # MD013: line too long
         args: [--disable, MD013, "--"]
-

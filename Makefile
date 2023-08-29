@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := help
 
+VENV :=.venv
 
 .PHONY: help
 help:  ## Display this help screen
@@ -7,16 +8,26 @@ help:  ## Display this help screen
 	@grep -E '^[a-z.A-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}' | sort
 
 
-.PHONY: compile
-compile: ## Compile document
-	@tectonic book.tex
-
-
 .PHONY: clean
 clean: ## clean the folder
 	@git clean -d -X -f
 
 
+
 .PHONY: install
-install: ## install tectonic
-	@curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net |sh
+install:  ## Install a virtual environment
+	python -m venv ${VENV}
+	${VENV}/bin/pip install --upgrade pip
+
+.PHONY: fmt
+fmt: install ## Run autoformatting and linting
+	${VENV}/bin/pip install pre-commit
+	${VENV}/bin/pre-commit install
+	${VENV}/bin/pre-commit run --all-files
+
+.PHONY: build
+build: install ## Build the book
+	${VENV}/bin/pip install jupyter-book
+	${VENV}/bin/jupyter-book clean book
+	${VENV}/bin/jupyter-book build book
+	touch book/_build/html/.nojekyll

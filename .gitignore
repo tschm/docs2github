@@ -1,5 +1,7 @@
 .idea
+.venv
 tectonic
+
 
 ### LaTeX ###
 ## Core latex/pdflatex auxiliary files:
