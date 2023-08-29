@@ -3,6 +3,6 @@
 format: jb-book
 root: docs/index
 parts:
-  - caption: "Overview"
+  - caption: "Introduction"
     chapters:
-      - file: docs/overview
+      - file: docs/latex
