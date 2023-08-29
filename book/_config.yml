@@ -1,20 +1,9 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: CVX Short Course
-author: CVX
-logo: _static/logo.jpeg
+title: DevOps
+author: Thomas Schmelzer
 only_build_toc_files: true
-
-execute:
-  execute_notebooks: cache
-  timeout: 1200               # 20 minutes timeout
-  allow_errors: true
-  exclude_patterns:
-    # those notebooks are extremely expensive
-    - docs/intro/notebooks/tv_inpainting.ipynb
-    # The exercises shall not be compiled, there code is incomplete and left as an exercise
-    - "exercises/notebooks/*.ipynb"
 
 sphinx:
   config:
@@ -34,9 +23,9 @@ parse:
 
 # Information about where the book exists on the web
 repository:
-  url: https://github.com/cvxgrp/cvx_short_course  # Online location of your book
+  url: https://github.com/tschm/docs2github  # Online location of your book
   path_to_book: book  # Optional path to your book, relative to the repository root
-  branch: master
+  branch: main
 
 # Add GitHub buttons to your book
 # See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
@@ -45,6 +34,3 @@ html:
   use_repository_button: true
   use_edit_page_button: true
   extra_navbar: Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-
-launch_buttons:
-  binderhub_url: "https://mybinder.org"  # The URL for your BinderHub (e.g., https://mybinder.org)
