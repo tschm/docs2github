@@ -1,1 +1,1 @@
-# [markowitz](https://github.com/tschm/docs2github/blob/gh-pages/index.html)
+# [markowitz](https://github.com/tschm/docs2github/blob/gh-pages/docs/index.html)
