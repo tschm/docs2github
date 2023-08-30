@@ -6,3 +6,4 @@ parts:
   - caption: "Introduction"
     chapters:
       - file: docs/latex
+      - file: docs/pre-commit
