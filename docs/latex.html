@@ -365,7 +365,8 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-tectonic">Install tectonic</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compile-the-latex-file">Compile the latex file</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduce-a-makfile">Introduce a Makfile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introducing-a-makefile">Introducing a Makefile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ignore-the-resulting-pdf-file">Ignore the resulting pdf file</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduce-a-workflow">Introduce a workflow</a></li>
 </ul>
             </nav>
@@ -380,56 +381,110 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="compiling-latex-documents">
 <h1>Compiling LaTeX documents<a class="headerlink" href="#compiling-latex-documents" title="Permalink to this heading">#</a></h1>
-<p>Assume we are working on a ‘*.tex’ in a small group.</p>
-<p>We intend to compile the <em>.tex file after each commit and make
+<p>We intend to compile a <em>.tex file after each commit and make
 the resulting ‘</em>.pdf’ document available on a draft branch.</p>
-<p>In general it’s a bad idea to keep large frequently changing
-binary files on the main branch of any repository.</p>
+<p>It would be a bad idea to keep a large frequently changing
+binary file on the main branch of any repository.</p>
 <section id="install-tectonic">
-<h2>Install tectonic<a class="headerlink" href="#install-tectonic" title="Permalink to this heading">#</a></h2>
-<p>We recommend the use of tectonic</p>
+<h2>Install <a class="reference external" href="https://tectonic-typesetting.github.io/en-US/">tectonic</a><a class="headerlink" href="#install-tectonic" title="Permalink to this heading">#</a></h2>
+<p>We recommend the use of tectonic as an alternative to pdflatex.
+It is a modern TeX engine that is easy to install and use and most suitable
+for our purposes.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-fsSL<span class="w"> </span>https://drop-sh.fullyjustified.net<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
 </pre></div>
 </div>
-<p>tectonic is</p>
+<p>This installation will later be performed on the fly in an automated process.</p>
 </section>
 <section id="compile-the-latex-file">
 <h2>Compile the latex file<a class="headerlink" href="#compile-the-latex-file" title="Permalink to this heading">#</a></h2>
+<p>The file hello.tex contains the following content</p>
+<div class="highlight-latex notranslate"><div class="highlight"><pre><span></span><span class="k">\documentclass</span><span class="nb">{</span>article<span class="nb">}</span>
+<span class="k">\begin</span><span class="nb">{</span>document<span class="nb">}</span>
+Hello World!
+<span class="k">\end</span><span class="nb">{</span>document<span class="nb">}</span>
+</pre></div>
+</div>
+<p>Running now on the command line</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tectonic<span class="w"> </span>f.tex
 </pre></div>
 </div>
-<p>Put the resulting f.pdf file into .gitignore</p>
+<p>should produce a file ‘f.pdf’</p>
 </section>
-<section id="introduce-a-makfile">
-<h2>Introduce a Makfile<a class="headerlink" href="#introduce-a-makfile" title="Permalink to this heading">#</a></h2>
-<p>The command to install tectonic was somewhat clumsy and for that reason we introduce</p>
-<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="nv">.DEFAULT_GOAL</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">help</span>
-
-<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">help</span>
-<span class="nf">help</span><span class="o">:</span><span class="w">  </span><span class="c">## Display this help screen</span>
-<span class="w"> </span>@echo<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[1mAvailable commands:\033[0m&quot;</span>
-<span class="w"> </span>@grep<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;^[a-z.A-Z_-]+:.*?## .*$$&#39;</span><span class="w"> </span><span class="k">$(</span>MAKEFILE_LIST<span class="k">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN {FS = &quot;:.*?## &quot;}; {printf &quot;  \033[36m%-18s\033[0m %s\n&quot;, $$1, $$2}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort
+<section id="introducing-a-makefile">
+<h2>Introducing a Makefile<a class="headerlink" href="#introducing-a-makefile" title="Permalink to this heading">#</a></h2>
+<p>Makefiles are a convenient way to automate tasks. We will use them
+for the compilation of our latex files and in particular
+to perform the clumsy installation of tectonic on the fly.</p>
+<p>Our goal is to create two commands</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>compile
+</pre></div>
+</div>
+<p>We achieve this with the following Makefile</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nv">.DEFAULT_GOAL</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>compile
 
 <span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">compile</span>
-<span class="nf">compile</span><span class="o">:</span><span class="w"> </span><span class="n">install</span> <span class="c">## Compile document</span>
-<span class="w"> </span>@tectonic<span class="w"> </span>book.tex
-
-<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">clean</span>
-<span class="nf">clean</span><span class="o">:</span><span class="w"> </span><span class="c">## clean the folder</span>
-<span class="w"> </span>@git<span class="w"> </span>clean<span class="w"> </span>-d<span class="w"> </span>-X<span class="w"> </span>-f
+<span class="nf">compile</span><span class="o">:</span><span class="w"> </span><span class="c">## Compile the &#39;*.tex&#39; file</span>
+<span class="w">  </span>@mkdir<span class="w"> </span>-p<span class="w"> </span>publish
+<span class="w"> </span>@./tectonic<span class="w"> </span>f.tex<span class="w"> </span>--outdir<span class="w"> </span>publish
 
 <span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">install</span>
 <span class="nf">install</span><span class="o">:</span><span class="w"> </span><span class="c">## install tectonic</span>
 <span class="w"> </span>@curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-fsSL<span class="w"> </span>https://drop-sh.fullyjustified.net<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
 </pre></div>
 </div>
-<p>we can now perform</p>
-<p>make compile</p>
+</section>
+<section id="ignore-the-resulting-pdf-file">
+<h2>Ignore the resulting pdf file<a class="headerlink" href="#ignore-the-resulting-pdf-file" title="Permalink to this heading">#</a></h2>
+<p>As mentioned above it is a bad idea to keep any binary
+file on the main branch of a repository. We therefore
+add</p>
+<div class="highlight-gitignore notranslate"><div class="highlight"><pre><span></span>publish
+tectonic
+</pre></div>
+</div>
+<p>to the local .gitignore file of the repository.</p>
 </section>
 <section id="introduce-a-workflow">
 <h2>Introduce a workflow<a class="headerlink" href="#introduce-a-workflow" title="Permalink to this heading">#</a></h2>
-<p>We want to automate the compilation such that the document is (re)compiled after each commit.
-We create the file .github/workflows/latex.yml</p>
+<p>The Makefile gave us a convenient way to compile the latex file
+even on a machine without any LaTeX installation. Our next goal
+is to perform this compilation automatically after each commit.</p>
+<p>There’s a fundamental lesson to learn here. GitHub is no longer
+a mere repository of files. It is a platform that allows us to
+respond to events, to perform tasks, and to automate workflows.</p>
+<p>We create the file ‘.github/workflows/latex.yml’</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build LaTeX document with make</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">push</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build_paper</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Git repository</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v3</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Compile LaTeX document</span>
+<span class="w">        </span><span class="nt">shell</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bash</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">make install</span>
+<span class="w">          </span><span class="no">make compile</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GitHub Pages action</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">JamesIves/github-pages-deploy-action@v4.4.3</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="c1"># The branch the action should deploy to.</span>
+<span class="w">          </span><span class="nt">branch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">draft</span>
+<span class="w">          </span><span class="c1"># The folder the action should deploy.</span>
+<span class="w">          </span><span class="nt">folder</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">publish</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -493,7 +548,8 @@ We create the file .github/workflows/latex.yml</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-tectonic">Install tectonic</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compile-the-latex-file">Compile the latex file</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduce-a-makfile">Introduce a Makfile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introducing-a-makefile">Introducing a Makefile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ignore-the-resulting-pdf-file">Ignore the resulting pdf file</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduce-a-workflow">Introduce a workflow</a></li>
 </ul>
   </nav></div>
