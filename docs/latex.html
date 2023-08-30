@@ -383,8 +383,6 @@ document.write(`
 <h1>Compiling LaTeX documents<a class="headerlink" href="#compiling-latex-documents" title="Permalink to this heading">#</a></h1>
 <p>We intend to compile a <em>.tex file after each commit and make
 the resulting ‘</em>.pdf’ document available on a draft branch.</p>
-<p>It would be a bad idea to keep a large frequently changing
-binary file on the main branch of any repository.</p>
 <section id="install-tectonic">
 <h2>Install <a class="reference external" href="https://tectonic-typesetting.github.io/en-US/">tectonic</a><a class="headerlink" href="#install-tectonic" title="Permalink to this heading">#</a></h2>
 <p>We recommend the use of tectonic as an alternative to pdflatex.
@@ -429,28 +427,28 @@ to perform the clumsy installation of tectonic on the fly.</p>
 <span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">compile</span>
 <span class="nf">compile</span><span class="o">:</span><span class="w"> </span><span class="c">## Compile the &#39;*.tex&#39; file</span>
 <span class="w">  </span>@mkdir<span class="w"> </span>-p<span class="w"> </span>publish
-<span class="w"> </span>@./tectonic<span class="w"> </span>f.tex<span class="w"> </span>--outdir<span class="w"> </span>publish
+<span class="w">  </span>@./tectonic<span class="w"> </span>f.tex<span class="w"> </span>--outdir<span class="w"> </span>publish
 
 <span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">install</span>
 <span class="nf">install</span><span class="o">:</span><span class="w"> </span><span class="c">## install tectonic</span>
-<span class="w"> </span>@curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-fsSL<span class="w"> </span>https://drop-sh.fullyjustified.net<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+<span class="w">  </span>@curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-fsSL<span class="w"> </span>https://drop-sh.fullyjustified.net<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
 </pre></div>
 </div>
 </section>
 <section id="ignore-the-resulting-pdf-file">
 <h2>Ignore the resulting pdf file<a class="headerlink" href="#ignore-the-resulting-pdf-file" title="Permalink to this heading">#</a></h2>
-<p>As mentioned above it is a bad idea to keep any binary
+<p>It is a bad idea to keep any binary
 file on the main branch of a repository. We therefore
 add</p>
 <div class="highlight-gitignore notranslate"><div class="highlight"><pre><span></span>publish
 tectonic
 </pre></div>
 </div>
-<p>to the local .gitignore file of the repository.</p>
+<p>to the local ‘.gitignore’ file of the repository.</p>
 </section>
 <section id="introduce-a-workflow">
 <h2>Introduce a workflow<a class="headerlink" href="#introduce-a-workflow" title="Permalink to this heading">#</a></h2>
-<p>The Makefile gave us a convenient way to compile the latex file
+<p>The Makefile gave us a convenient tool to compile the latex file
 even on a machine without any LaTeX installation. Our next goal
 is to perform this compilation automatically after each commit.</p>
 <p>There’s a fundamental lesson to learn here. GitHub is no longer

@@ -3,9 +3,6 @@
 We intend to compile a *.tex file after each commit and make
 the resulting '*.pdf' document available on a draft branch.
 
-It would be a bad idea to keep a large frequently changing
-binary file on the main branch of any repository.
-
 ## Install [tectonic](https://tectonic-typesetting.github.io/en-US/)
 
 We recommend the use of tectonic as an alternative to pdflatex.
@@ -63,16 +60,16 @@ We achieve this with the following Makefile
 .PHONY: compile
 compile: ## Compile the '*.tex' file
   @mkdir -p publish
- @./tectonic f.tex --outdir publish
+  @./tectonic f.tex --outdir publish
 
 .PHONY: install
 install: ## install tectonic
- @curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+  @curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 ```
 
 ## Ignore the resulting pdf file
 
-As mentioned above it is a bad idea to keep any binary
+It is a bad idea to keep any binary
 file on the main branch of a repository. We therefore
 add
 
@@ -81,11 +78,11 @@ publish
 tectonic
 ```
 
-to the local .gitignore file of the repository.
+to the local '.gitignore' file of the repository.
 
 ## Introduce a workflow
 
-The Makefile gave us a convenient way to compile the latex file
+The Makefile gave us a convenient tool to compile the latex file
 even on a machine without any LaTeX installation. Our next goal
 is to perform this compilation automatically after each commit.
 
