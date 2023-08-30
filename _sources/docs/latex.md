@@ -150,6 +150,19 @@ on the draft branch.
 ## Summary
 
 We are compiling LaTeX documents with tectonic using GitHub actions.
-The resulting pdf file is published on a draft branch. You can now share
-your repository with others. They will always find the latest version
-readable version of your paper.
+The resulting pdf file is published on a draft branch.
+
+We also this task as a warm-up exercise for more complicated
+workflows that will be introduced in the next sections. However,
+the fundamental idea remains the same. Local changes are pushed
+into a repository. GitHub actions respond to these events and
+perform tasks that are described in workflow files.
+
+Those tasks can build software, run tests, deploy applications, construct
+docker images, and much more. We will see examples for all of these
+in the following sections.
+
+## References
+
+tectonic
+Github Workflows
