@@ -29,10 +29,10 @@ Hello World!
 Running now on the command line
 
 ```bash
-tectonic f.tex
+tectonic hello.tex
 ```
 
-should produce a file 'f.pdf'
+should produce a file 'hello.pdf'
 
 ## Introducing a Makefile
 
@@ -60,12 +60,15 @@ We achieve this with the following Makefile
 .PHONY: compile
 compile: ## Compile the '*.tex' file
   @mkdir -p publish
-  @./tectonic f.tex --outdir publish
+  @./tectonic hello.tex --outdir publish
 
 .PHONY: install
 install: ## install tectonic
   @curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 ```
+
+For reasons not obvious yet we publish the compiled pdf file
+in a subdirectory 'publish' we also create on the fly.
 
 ## Ignore the resulting pdf file
 
@@ -120,3 +123,11 @@ jobs:
           # The folder the action should deploy.
           folder: publish
 ```
+
+This file describes a workflow that is performed after each push
+into the repository. It consists of three steps.
+First, we check out the repository. Second, we compile the latex file
+using the Makefile we have created. In the final step we are using
+a GitHub action to deploy the resulting 'publish' folder to the draft branch.
+For this step we are using a 3rd party action that has been made
+available by James Ives.
