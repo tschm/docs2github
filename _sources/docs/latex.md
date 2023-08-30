@@ -34,7 +34,7 @@ tectonic hello.tex
 
 should produce a file 'hello.pdf'
 
-## Introducing a Makefile
+## Introduce a Makefile
 
 Makefiles are a convenient way to automate tasks. We will use them
 for the compilation of our latex files and in particular
@@ -131,3 +131,23 @@ using the Makefile we have created. In the final step we are using
 a GitHub action to deploy the resulting 'publish' folder to the draft branch.
 For this step we are using a 3rd party action that has been made
 available by James Ives.
+
+## Revisit README.md
+
+The README.md file is the main entry point of any repository.
+
+```markdown
+# [Hello](https://github.com/USERNMAE/hello/blob/draft/Hello.pdf)
+
+## Abstract
+
+This paper is about ...
+```
+
+This will create a Headline with a link to your pdf file
+on the draft branch.
+
+## Summary
+
+We are compiling LaTeX documents with tectonic using GitHub actions.
+The resulting pdf file is published on a draft branch.
