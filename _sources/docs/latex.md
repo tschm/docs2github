@@ -132,9 +132,9 @@ a GitHub action to deploy the resulting 'publish' folder to the draft branch.
 For this step we are using a 3rd party action that has been made
 available by James Ives.
 
-## Revisit 'README.md'
+## Revisit README
 
-The 'README.md' file is the main entry point for any repository.
+The README file is the main entry point for any repository.
 
 ```markdown
 # [Hello](https://github.com/USERNMAE/hello/blob/draft/Hello.pdf)
