@@ -1,61 +1,125 @@
 # Compiling LaTeX documents
 
-Assume we are working on a '*.tex' in a small group.
-
-We intend to compile the *.tex file after each commit and make
+We intend to compile a *.tex file after each commit and make
 the resulting '*.pdf' document available on a draft branch.
 
-In general it's a bad idea to keep large frequently changing
-binary files on the main branch of any repository.
+It would be a bad idea to keep a large frequently changing
+binary file on the main branch of any repository.
 
-## Install tectonic
+## Install [tectonic](https://tectonic-typesetting.github.io/en-US/)
 
-We recommend the use of tectonic
+We recommend the use of tectonic as an alternative to pdflatex.
+It is a modern TeX engine that is easy to install and use and most suitable
+for our purposes.
 
 ```bash
 curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 ````
 
-tectonic is
+This installation will later be performed on the fly in an automated process.
 
 ## Compile the latex file
+
+The file hello.tex contains the following content
+
+```latex
+\documentclass{article}
+\begin{document}
+Hello World!
+\end{document}
+```
+
+Running now on the command line
 
 ```bash
 tectonic f.tex
 ```
 
-Put the resulting f.pdf file into .gitignore
+should produce a file 'f.pdf'
 
-## Introduce a Makfile
+## Introducing a Makefile
 
-The command to install tectonic was somewhat clumsy and for that reason we introduce
+Makefiles are a convenient way to automate tasks. We will use them
+for the compilation of our latex files and in particular
+to perform the clumsy installation of tectonic on the fly.
 
-```make
-.DEFAULT_GOAL := help
+Our goal is to create two commands
 
-.PHONY: help
-help:  ## Display this help screen
- @echo -e "\033[1mAvailable commands:\033[0m"
- @grep -E '^[a-z.A-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}' | sort
+```bash
+make install
+```
+
+and
+
+```bash
+make compile
+```
+
+We achieve this with the following Makefile
+
+```makefile
+.DEFAULT_GOAL := compile
 
 .PHONY: compile
-compile: install ## Compile document
- @tectonic book.tex
-
-.PHONY: clean
-clean: ## clean the folder
- @git clean -d -X -f
+compile: ## Compile the '*.tex' file
+  @mkdir -p publish
+ @./tectonic f.tex --outdir publish
 
 .PHONY: install
 install: ## install tectonic
  @curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 ```
 
-we can now perform
+## Ignore the resulting pdf file
 
-make compile
+As mentioned above it is a bad idea to keep any binary
+file on the main branch of a repository. We therefore
+add
+
+```gitignore
+publish
+tectonic
+```
+
+to the local .gitignore file of the repository.
 
 ## Introduce a workflow
 
-We want to automate the compilation such that the document is (re)compiled after each commit.
-We create the file .github/workflows/latex.yml
+The Makefile gave us a convenient way to compile the latex file
+even on a machine without any LaTeX installation. Our next goal
+is to perform this compilation automatically after each commit.
+
+There's a fundamental lesson to learn here. GitHub is no longer
+a mere repository of files. It is a platform that allows us to
+respond to events, to perform tasks, and to automate workflows.
+
+We create the file '.github/workflows/latex.yml'
+
+```yaml
+name: Build LaTeX document with make
+
+on:
+  push
+
+jobs:
+  build_paper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v3
+
+      - name: Compile LaTeX document
+        shell: bash
+        run: |
+          make install
+          make compile
+
+      - name: GitHub Pages action
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
+        with:
+          # The branch the action should deploy to.
+          branch: draft
+          # The folder the action should deploy.
+          folder: publish
+```
