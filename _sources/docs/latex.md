@@ -132,9 +132,9 @@ a GitHub action to deploy the resulting 'publish' folder to the draft branch.
 For this step we are using a 3rd party action that has been made
 available by James Ives.
 
-## Revisit README.md
+## Revisit 'README.md'
 
-The README.md file is the main entry point of any repository.
+The 'README.md' file is the main entry point for any repository.
 
 ```markdown
 # [Hello](https://github.com/USERNMAE/hello/blob/draft/Hello.pdf)
@@ -150,4 +150,6 @@ on the draft branch.
 ## Summary
 
 We are compiling LaTeX documents with tectonic using GitHub actions.
-The resulting pdf file is published on a draft branch.
+The resulting pdf file is published on a draft branch. You can now share
+your repository with others. They will always find the latest version
+readable version of your paper.
