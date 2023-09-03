@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>pre-commit &#8212; DevOps</title>
+    <title>Acting before committing &#8212; DevOps</title>
   
   
   
@@ -153,7 +153,7 @@ const thebe_selector_output = ".output, .cell_output"
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="latex.html">Compiling LaTeX documents</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">pre-commit</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Acting before committing</a></li>
 </ul>
 
     </div>
@@ -341,7 +341,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -352,11 +354,23 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>pre-commit</h1>
+    <h1>Acting before committing</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-pre-commit">Install pre-commit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-pre-commit-configuration-file">Create a pre-commit configuration file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pre-commit-hooks-locally">Run pre-commit hooks locally</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-on-your-hooks">Check on your hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-public-demo-repository">A public demo repository</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -366,9 +380,108 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="pre-commit">
-<h1>pre-commit<a class="headerlink" href="#pre-commit" title="Permalink to this heading">#</a></h1>
-<p>pre-commit hooks are most helpful.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="acting-before-committing">
+<h1>Acting before committing<a class="headerlink" href="#acting-before-committing" title="Permalink to this heading">#</a></h1>
+<p>pre-commit hooks are a state of mind.
+They act on your code before you push it to the repository.
+We meet them over and over again in this book.
+The first example may appear trivial however,
+they are certainly a good starting point to illustrate
+how they work.</p>
+<section id="install-pre-commit">
+<h2>Install pre-commit<a class="headerlink" href="#install-pre-commit" title="Permalink to this heading">#</a></h2>
+<p>pre-commit is one of those rare tools we recommend to make
+available in your central Python environment.</p>
+<p>Hence</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+<p>is the right thing to do. We will soon discuss the
+setup of Python environments in much greater detail.</p>
+</section>
+<section id="create-a-pre-commit-configuration-file">
+<h2>Create a pre-commit configuration file<a class="headerlink" href="#create-a-pre-commit-configuration-file" title="Permalink to this heading">#</a></h2>
+<p>pre-commit is configured via a file called <code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code>.
+We create this file in the root directory of our repository.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">repos</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">repo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/pre-commit/pre-commit-hooks</span>
+<span class="w">    </span><span class="nt">rev</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v4.4.0</span>
+<span class="w">    </span><span class="nt">hooks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end-of-file-fixer</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trailing-whitespace</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">repo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/igorshubovych/markdownlint-cli</span>
+<span class="w">    </span><span class="nt">rev</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v0.35.0</span>
+<span class="w">    </span><span class="nt">hooks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">markdownlint-fix</span>
+</pre></div>
+</div>
+<p>In this file we have defined three hooks. The first two are
+provided by the pre-commit project itself. The third one is
+provided by Igor Shubovych and covers the linting of
+markdown files, e.g. the ‘README’ file.</p>
+</section>
+<section id="run-pre-commit-hooks-locally">
+<h2>Run pre-commit hooks locally<a class="headerlink" href="#run-pre-commit-hooks-locally" title="Permalink to this heading">#</a></h2>
+<p>Of course, you should run the hooks locally before you push
+your work. You can either install them via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p>and then run repeated attempts to commit your code or you
+could include a dedicated job in your Makefile for this, e.g.</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nv">.DEFAULT_GOAL</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>compile
+
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">compile</span>
+<span class="nf">compile</span><span class="o">:</span><span class="w"> </span><span class="c">## Compile the &#39;*.tex&#39; file</span>
+<span class="w">  </span>@mkdir<span class="w"> </span>-p<span class="w"> </span>publish
+<span class="w">  </span>@./tectonic<span class="w"> </span>hello.tex<span class="w"> </span>--outdir<span class="w"> </span>publish
+
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">install</span>
+<span class="nf">install</span><span class="o">:</span><span class="w"> </span><span class="c">## install tectonic</span>
+<span class="w">  </span>@curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-fsSL<span class="w"> </span>https://drop-sh.fullyjustified.net<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">pre</span>-<span class="n">commit</span>
+<span class="nf">pre-commit</span><span class="o">:</span><span class="w"> </span><span class="c">## run pre-commit hooks</span>
+<span class="w">  </span>@pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+</pre></div>
+</div>
+<p>On the command line you can now do</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+<p>and it will run through all the hooks defined in the configuration file.</p>
+</section>
+<section id="check-on-your-hooks">
+<h2>Check on your hooks<a class="headerlink" href="#check-on-your-hooks" title="Permalink to this heading">#</a></h2>
+<p>When working in teams you can be assured that not all members
+will run or install the hooks. However, you can check on them
+within a workflow.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pre-commit</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pre-commit</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v3</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pre-commit/action@v3.0.0</span>
+</pre></div>
+</div>
+<p>This will run the pre-commit hook in post-commit mode.
+In the best case, it will find nothing to do and confirms that
+pre-commit has done its job.</p>
+</section>
+<section id="a-public-demo-repository">
+<h2>A public demo repository<a class="headerlink" href="#a-public-demo-repository" title="Permalink to this heading">#</a></h2>
+<p>We have created a public demo repository for you to play with.
+See <a class="reference external" href="https://github.com/tschm/hydra">Hydra</a> on GitHub.</p>
+<p>Note the workflows, the makefile and the configuration file for
+the pre-commit hooks.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -420,6 +533,24 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-pre-commit">Install pre-commit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-pre-commit-configuration-file">Create a pre-commit configuration file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pre-commit-hooks-locally">Run pre-commit hooks locally</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-on-your-hooks">Check on your hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-public-demo-repository">A public demo repository</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
