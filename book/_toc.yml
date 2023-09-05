@@ -3,7 +3,19 @@
 format: jb-book
 root: docs/index
 parts:
-  - caption: "Introduction"
+  - caption: "WarmUp"
     chapters:
       - file: docs/latex
       - file: docs/pre-commit
+  - caption: "Python"
+    chapters:
+      - file: docs/poetry
+      - file: docs/sharing
+      - file: docs/cli
+      - file: docs/book
+  - caption: "Docker"
+    chapters:
+      - file: docs/docker
+  - caption: "Miscellaneous"
+    chapters:
+      - file: docs/central
