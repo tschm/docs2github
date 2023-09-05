@@ -2,10 +2,8 @@
 
 pre-commit hooks are a state of mind.
 They act on your code before you push it to the repository.
-We meet them over and over again in this book.
-The first examples may appear trivial however,
-they are certainly a good starting point to illustrate
-how they work.
+We will meet them over and over again in this book.
+The first toy examples illustrate how they work.
 
 ## Install pre-commit
 
@@ -18,7 +16,7 @@ Hence
 pip install pre-commit
 ````
 
-is the right thing to do. We will soon discuss the
+is an acceptable thing to do. We will soon discuss the
 setup of Python environments in much greater detail.
 
 ## Create a pre-commit configuration file
@@ -44,6 +42,15 @@ In this file we have defined three hooks. The first two are
 provided by the pre-commit project itself. The third one is
 provided by Igor Shubovych and covers the linting of
 markdown files, e.g. the 'README' file.
+
+That's a typical setup. You will find a lot of useful hooks
+from various sources. You could write your own hooks but
+that's a topic for another day.
+
+You could take inspiration from the
+[pre-commit marketplace](https://pre-commit.com/hooks.html).
+It helps to study large projects like the pandas
+repository. They tend to have a very elaborate setup.
 
 ## Run pre-commit hooks locally
 
@@ -80,13 +87,14 @@ On the command line you can now do
 make pre-commit
 ```
 
-and it will run through all the hooks defined in the configuration file.
+and it will run through all the hooks defined in the configuration file
+if pre-commit is installed.
 
-## Check on your hooks
+## Check your hooks
 
 When working in teams you can be assured that not all members
-will run or install the hooks. However, you can check on them
-within a workflow.
+will (manage to) run or install the hooks.
+However, you can check on them within a workflow.
 
 ```yaml
 name: pre-commit

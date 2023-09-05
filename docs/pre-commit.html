@@ -383,7 +383,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-pre-commit">Install pre-commit</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-pre-commit-configuration-file">Create a pre-commit configuration file</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pre-commit-hooks-locally">Run pre-commit hooks locally</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-on-your-hooks">Check on your hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-your-hooks">Check your hooks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-public-demo-repository">A public demo repository</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
 </ul>
@@ -401,10 +401,8 @@ document.write(`
 <h1>Acting before committing<a class="headerlink" href="#acting-before-committing" title="Permalink to this heading">#</a></h1>
 <p>pre-commit hooks are a state of mind.
 They act on your code before you push it to the repository.
-We meet them over and over again in this book.
-The first examples may appear trivial however,
-they are certainly a good starting point to illustrate
-how they work.</p>
+We will meet them over and over again in this book.
+The first toy examples illustrate how they work.</p>
 <section id="install-pre-commit">
 <h2>Install pre-commit<a class="headerlink" href="#install-pre-commit" title="Permalink to this heading">#</a></h2>
 <p>pre-commit is one of those rare tools we recommend to make
@@ -413,7 +411,7 @@ available in your central Python environment.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
 </pre></div>
 </div>
-<p>is the right thing to do. We will soon discuss the
+<p>is an acceptable thing to do. We will soon discuss the
 setup of Python environments in much greater detail.</p>
 </section>
 <section id="create-a-pre-commit-configuration-file">
@@ -437,6 +435,13 @@ We create this file in the root directory of our repository.</p>
 provided by the pre-commit project itself. The third one is
 provided by Igor Shubovych and covers the linting of
 markdown files, e.g. the ‘README’ file.</p>
+<p>That’s a typical setup. You will find a lot of useful hooks
+from various sources. You could write your own hooks but
+that’s a topic for another day.</p>
+<p>You could take inspiration from the
+<a class="reference external" href="https://pre-commit.com/hooks.html">pre-commit marketplace</a>.
+It helps to study large projects like the pandas
+repository. They tend to have a very elaborate setup.</p>
 </section>
 <section id="run-pre-commit-hooks-locally">
 <h2>Run pre-commit hooks locally<a class="headerlink" href="#run-pre-commit-hooks-locally" title="Permalink to this heading">#</a></h2>
@@ -467,13 +472,14 @@ could include a dedicated job in your Makefile for this, e.g.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>pre-commit
 </pre></div>
 </div>
-<p>and it will run through all the hooks defined in the configuration file.</p>
+<p>and it will run through all the hooks defined in the configuration file
+if pre-commit is installed.</p>
 </section>
-<section id="check-on-your-hooks">
-<h2>Check on your hooks<a class="headerlink" href="#check-on-your-hooks" title="Permalink to this heading">#</a></h2>
+<section id="check-your-hooks">
+<h2>Check your hooks<a class="headerlink" href="#check-your-hooks" title="Permalink to this heading">#</a></h2>
 <p>When working in teams you can be assured that not all members
-will run or install the hooks. However, you can check on them
-within a workflow.</p>
+will (manage to) run or install the hooks.
+However, you can check on them within a workflow.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pre-commit</span>
 
 <span class="nt">on</span><span class="p">:</span>
@@ -574,7 +580,7 @@ the pre-commit hooks.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-pre-commit">Install pre-commit</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-pre-commit-configuration-file">Create a pre-commit configuration file</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pre-commit-hooks-locally">Run pre-commit hooks locally</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-on-your-hooks">Check on your hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-your-hooks">Check your hooks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-public-demo-repository">A public demo repository</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
 </ul>
