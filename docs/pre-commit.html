@@ -65,6 +65,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'docs/pre-commit';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Avoiding dependency hell" href="poetry.html" />
     <link rel="prev" title="Compiling LaTeX documents" href="latex.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -150,10 +151,25 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">WarmUp</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="latex.html">Compiling LaTeX documents</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Acting before committing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Python</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="poetry.html">Avoiding dependency hell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sharing.html">Sharing your code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command from the line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book.html">Compiling Jupyter Books</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Docker</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docker.html">Docker</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Miscellaneous</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="central.html">Centralized GitHub actions</a></li>
 </ul>
 
     </div>
@@ -369,6 +385,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pre-commit-hooks-locally">Run pre-commit hooks locally</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-on-your-hooks">Check on your hooks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-public-demo-repository">A public demo repository</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
 </ul>
             </nav>
         </div>
@@ -385,7 +402,7 @@ document.write(`
 <p>pre-commit hooks are a state of mind.
 They act on your code before you push it to the repository.
 We meet them over and over again in this book.
-The first example may appear trivial however,
+The first examples may appear trivial however,
 they are certainly a good starting point to illustrate
 how they work.</p>
 <section id="install-pre-commit">
@@ -482,6 +499,9 @@ See <a class="reference external" href="https://github.com/tschm/hydra">Hydra</a
 <p>Note the workflows, the makefile and the configuration file for
 the pre-commit hooks.</p>
 </section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">#</a></h2>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -524,6 +544,15 @@ the pre-commit hooks.</p>
         <p class="prev-next-title">Compiling LaTeX documents</p>
       </div>
     </a>
+    <a class="right-next"
+       href="poetry.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Avoiding dependency hell</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div></div>
   
 </div>
@@ -547,6 +576,7 @@ the pre-commit hooks.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pre-commit-hooks-locally">Run pre-commit hooks locally</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-on-your-hooks">Check on your hooks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-public-demo-repository">A public demo repository</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
 </ul>
   </nav></div>
 

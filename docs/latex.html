@@ -151,10 +151,25 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">WarmUp</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Compiling LaTeX documents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pre-commit.html">Acting before committing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Python</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="poetry.html">Avoiding dependency hell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sharing.html">Sharing your code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command from the line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="book.html">Compiling Jupyter Books</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Docker</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docker.html">Docker</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Miscellaneous</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="central.html">Centralized GitHub actions</a></li>
 </ul>
 
     </div>
@@ -372,7 +387,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduce-a-workflow">Introduce a workflow</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#revisit-readme">Revisit README</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
 </ul>
             </nav>
         </div>
@@ -386,12 +401,19 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="compiling-latex-documents">
 <h1>Compiling LaTeX documents<a class="headerlink" href="#compiling-latex-documents" title="Permalink to this heading">#</a></h1>
-<p>We intend to compile a <em>.tex file after each commit and make
-the resulting ‘</em>.pdf’ document available on a draft branch.</p>
+<p>We intend to compile a ‘.tex’ file after each commit and make
+the resulting ‘.pdf’ document available on a draft branch.
+Linking from your README file to this draft branch will
+simplify sharing your work with others. Your ‘.pdf’ file
+is not some historic snapshot of your work but a living document
+updated with each commit. Interested readers do not have
+to clone your repository and compile the document themselves.
+At the same time you are warned if your changes break
+the compilation.</p>
 <section id="install-tectonic">
 <h2>Install <a class="reference external" href="https://tectonic-typesetting.github.io/en-US/">tectonic</a><a class="headerlink" href="#install-tectonic" title="Permalink to this heading">#</a></h2>
 <p>We recommend the use of tectonic as an alternative to pdflatex.
-It is a modern TeX engine that is easy to install and use and most suitable
+It is a modern TeX engine that is easy to install and most suitable
 for our purposes.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-fsSL<span class="w"> </span>https://drop-sh.fullyjustified.net<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
 </pre></div>
@@ -427,7 +449,7 @@ to perform the clumsy installation of tectonic on the fly.</p>
 </pre></div>
 </div>
 <p>We achieve this with the following Makefile</p>
-<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nv">.DEFAULT_GOAL</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>compile
+<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="nv">.DEFAULT_GOAL</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>compile
 
 <span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">compile</span>
 <span class="nf">compile</span><span class="o">:</span><span class="w"> </span><span class="c">## Compile the &#39;*.tex&#39; file</span>
@@ -459,7 +481,7 @@ tectonic
 even on a machine without any LaTeX installation. Our next goal
 is to perform this compilation automatically after each commit.</p>
 <p>There’s a fundamental lesson to learn here. GitHub is no longer
-a mere repository of files. It is a platform that allows us to
+just a storage place for files. It is a platform that allows us to
 respond to events, to perform tasks, and to automate workflows.</p>
 <p>We create the file ‘.github/workflows/latex.yml’</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build LaTeX document with make</span>
@@ -515,17 +537,17 @@ on the draft branch.</p>
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
 <p>We are compiling LaTeX documents with tectonic using GitHub actions.
 The resulting pdf file is published on a draft branch.</p>
-<p>We also this task as a warm-up exercise for more complicated
+<p>We also use this task as a warm-up exercise for the more refined
 workflows that will be introduced in the next sections. However,
 the fundamental idea remains the same. Local changes are pushed
 into a repository. GitHub actions respond to these events and
 perform tasks that are described in workflow files.</p>
-<p>Those tasks can build software, run tests, deploy applications, construct
-docker images, and much more. We will see examples for all of these
-in the following sections.</p>
+<p>Those tasks can build software, run tests, deploy applications,
+construct docker images, and much more.
+We will see examples for all of these in the following sections.</p>
 </section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">#</a></h2>
 <p>tectonic
 Github Workflows</p>
 </section>
@@ -605,7 +627,7 @@ Github Workflows</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduce-a-workflow">Introduce a workflow</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#revisit-readme">Revisit README</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
 </ul>
   </nav></div>
 

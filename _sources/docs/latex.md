@@ -1,12 +1,19 @@
 # Compiling LaTeX documents
 
-We intend to compile a *.tex file after each commit and make
-the resulting '*.pdf' document available on a draft branch.
+We intend to compile a '.tex' file after each commit and make
+the resulting '.pdf' document available on a draft branch.
+Linking from your README file to this draft branch will
+simplify sharing your work with others. Your '.pdf' file
+is not some historic snapshot of your work but a living document
+updated with each commit. Interested readers do not have
+to clone your repository and compile the document themselves.
+At the same time you are warned if your changes break
+the compilation.
 
 ## Install [tectonic](https://tectonic-typesetting.github.io/en-US/)
 
 We recommend the use of tectonic as an alternative to pdflatex.
-It is a modern TeX engine that is easy to install and use and most suitable
+It is a modern TeX engine that is easy to install and most suitable
 for our purposes.
 
 ```bash
@@ -54,7 +61,7 @@ make compile
 
 We achieve this with the following Makefile
 
-```makefile
+```make
 .DEFAULT_GOAL := compile
 
 .PHONY: compile
@@ -90,7 +97,7 @@ even on a machine without any LaTeX installation. Our next goal
 is to perform this compilation automatically after each commit.
 
 There's a fundamental lesson to learn here. GitHub is no longer
-a mere repository of files. It is a platform that allows us to
+just a storage place for files. It is a platform that allows us to
 respond to events, to perform tasks, and to automate workflows.
 
 We create the file '.github/workflows/latex.yml'
@@ -152,17 +159,17 @@ on the draft branch.
 We are compiling LaTeX documents with tectonic using GitHub actions.
 The resulting pdf file is published on a draft branch.
 
-We also this task as a warm-up exercise for more complicated
+We also use this task as a warm-up exercise for the more refined
 workflows that will be introduced in the next sections. However,
 the fundamental idea remains the same. Local changes are pushed
 into a repository. GitHub actions respond to these events and
 perform tasks that are described in workflow files.
 
-Those tasks can build software, run tests, deploy applications, construct
-docker images, and much more. We will see examples for all of these
-in the following sections.
+Those tasks can build software, run tests, deploy applications,
+construct docker images, and much more.
+We will see examples for all of these in the following sections.
 
-## References
+## Further reading
 
 tectonic
 Github Workflows

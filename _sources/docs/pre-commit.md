@@ -3,7 +3,7 @@
 pre-commit hooks are a state of mind.
 They act on your code before you push it to the repository.
 We meet them over and over again in this book.
-The first example may appear trivial however,
+The first examples may appear trivial however,
 they are certainly a good starting point to illustrate
 how they work.
 
@@ -114,3 +114,5 @@ See [Hydra](https://github.com/tschm/hydra) on GitHub.
 
 Note the workflows, the makefile and the configuration file for
 the pre-commit hooks.
+
+## Further reading
