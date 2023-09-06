@@ -170,6 +170,7 @@ const thebe_selector_output = ".output, .cell_output"
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Miscellaneous</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="central.html">Centralized GitHub actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bash.html">Bash magic</a></li>
 </ul>
 
     </div>
@@ -401,7 +402,7 @@ document.write(`
 <p>Dependency hell in its mildest form
 can already be faced when compiling LaTeX documents
 locally with pdflatex. A document may compile
-on your personal machine, yet it may not compile on
+on your personal machine, yet it may fail to do so on
 the computer of your supervisor. The reason is that
 you have a mismatch concerning the installed packages.</p>
 <p>Such problems can be quite subtle and hard to catch
@@ -409,9 +410,9 @@ when developing software. Your supervisor may operate
 using a different yet seemingly compatible version
 of a package you rely on.</p>
 <p>Any Python code you write assumes a certain environment
-with some packages. There are different strategies to
-address the issue. We recommend to use <strong>virtual environments</strong>
-to manage your dependencies.</p>
+with some packages. The situation is similar when you code in R.
+There are different strategies to address the issue.
+We recommend to use <strong>virtual environments</strong> to manage your dependencies.</p>
 <p>If you deploy entire applications you may want to use
 containers, but we ask you to be patient. We will discuss
 containers in a later chapter.</p>
@@ -428,6 +429,17 @@ depends on. It will manage (install/update) them for you.</p>
 </section>
 <section id="poetry">
 <h2>Poetry<a class="headerlink" href="#poetry" title="Permalink to this heading">#</a></h2>
+<p>We recommend to install poetry via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-sSL<span class="w"> </span>https://install.python-poetry.org<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-
+</pre></div>
+</div>
+<p>You may want to confirm the installation by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>--version
+</pre></div>
+</div>
+<p>We recommend to start new projects on GitHub
+using a template</p>
+<p>scientific python</p>
 <p>pyproject.toml
 poetry.lock</p>
 </section>
