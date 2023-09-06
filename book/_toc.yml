@@ -19,3 +19,4 @@ parts:
   - caption: "Miscellaneous"
     chapters:
       - file: docs/central
+      - file: docs/bash
