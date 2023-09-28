@@ -1,5 +1,7 @@
 # [DevOps for Academics](https://tschm.github.io/docs2github/docs/index.html)
 
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/tschm/docs2github/main.svg?badge_token=hmvSpyLwRMut_29BwJajJg)](https://results.pre-commit.ci/latest/github/tschm/docs2github/main?badge_token=hmvSpyLwRMut_29BwJajJg)
+
 My goal is to show you programming paradise or at least the door to it or the
 place at the start of the track leading towards the door (or the ... you get recursion now).
 Let's not be too ambitious given that those notes shall serve only as an introduction
