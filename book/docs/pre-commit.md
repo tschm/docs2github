@@ -1,9 +1,10 @@
 # Acting before committing
 
 pre-commit hooks are a state of mind.
-They act on your code before you push it to the repository.
+They act on your code, documents or data
+before you push it to the repository.
 We will meet them over and over again in this book.
-The first toy examples illustrate how they work.
+A first toy example shall illustrate how they work.
 
 ## Install pre-commit
 
@@ -43,9 +44,9 @@ provided by the pre-commit project itself. The third one is
 provided by Igor Shubovych and covers the linting of
 markdown files, e.g. the 'README' file.
 
-That's a typical setup. You will find a lot of useful hooks
-from various sources. You could write your own hooks but
-that's a topic for another day.
+The combination of hooks from various sources is a typical setup.
+You will find a lot of useful hooks floating around.
+You could write your own hooks but that's a topic for another day.
 
 You could take inspiration from the
 [pre-commit marketplace](https://pre-commit.com/hooks.html).
@@ -61,7 +62,7 @@ your work. You can either install them via
 pre-commit install
 ```
 
-and then run repeated attempts to commit your code or you
+and then run repeated attempts to commit your code, or you
 could include a dedicated job in your Makefile for this, e.g.
 
 ```makefile
@@ -100,7 +101,6 @@ However, you can check on them within a workflow.
 name: pre-commit
 
 on:
-  pull_request:
   push:
 
 jobs:
@@ -124,3 +124,5 @@ Note the workflows, the makefile and the configuration file for
 the pre-commit hooks.
 
 ## Further reading
+
+- [pre-commit](https://pre-commit.com/)
