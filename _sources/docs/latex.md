@@ -2,11 +2,11 @@
 
 We intend to compile a '.tex' file after each commit and make
 the resulting '.pdf' document available on a draft branch.
-Linking from your README file to this draft branch will
+Linking from your README file to this branch will
 simplify sharing your work with others. Your '.pdf' file
 is not some historic snapshot of your work but a living document
 updated with each commit. Interested readers do not have
-to clone your repository and compile the document themselves.
+to clone your repository and compile the document locally.
 At the same time you are warned if your changes break
 the compilation.
 
@@ -74,7 +74,7 @@ install: ## install tectonic
   @curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 ```
 
-For reasons not obvious yet we publish the compiled pdf file
+For reasons not obvious yet, we publish the compiled 'hello.pdf' file
 in a subdirectory 'publish' we also create on the fly.
 
 ## Ignore the resulting pdf file
@@ -132,11 +132,13 @@ jobs:
 ```
 
 This file describes a workflow that is performed after each push
-into the repository. It consists of three steps.
-First, we check out the repository. Second, we compile the latex file
-using the Makefile we have created. In the final step we are using
-a GitHub action to deploy the resulting 'publish' folder to the draft branch.
-For this step we are using a 3rd party action that has been made
+into the repository. It consists of three steps:
+
+* Check out the repository.
+* Compile the latex file via the 'make' route.
+* Deploy the 'publish' folder to the draft branch.
+
+For the final step we are using a 3rd party action that has been made
 available by James Ives.
 
 ## Revisit README
@@ -153,6 +155,31 @@ This paper is about ...
 
 This will create a Headline with a link to your pdf file
 on the draft branch.
+
+## Use a centralized workflow
+
+We have created a workflow that simplifies the workflow above
+even further. It is deployed on in the [central repository]
+(<https://github.com/cvxgrp/.github>) by Stanford's cvx group.
+
+```yaml
+name: Build LaTeX document
+
+on:
+  push
+
+jobs:
+  build_paper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: cvxgrp/.github/actions/latex@main
+        with:
+          paper: 'hello.tex'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+This workflow performs all the steps introduced above.
 
 ## Summary
 
@@ -171,5 +198,7 @@ We will see examples for all of these in the following sections.
 
 ## Further reading
 
-tectonic
-Github Workflows
+We have touched [tectonic](https://tectonic-typesetting.github.io/en-US/)
+and have successfully applied it for various repositories at Stanford
+University. In particular, we point the reader to the lecture notes by
+[Michael Howes](https://github.com/Michael-Howes/first-year-stats-notes).
