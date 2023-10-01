@@ -411,9 +411,10 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="acting-before-committing">
 <h1>Acting before committing<a class="headerlink" href="#acting-before-committing" title="Permalink to this heading">#</a></h1>
 <p>pre-commit hooks are a state of mind.
-They act on your code before you push it to the repository.
+They act on your code, documents or data
+before you push it to the repository.
 We will meet them over and over again in this book.
-The first toy examples illustrate how they work.</p>
+A first toy example shall illustrate how they work.</p>
 <section id="install-pre-commit">
 <h2>Install pre-commit<a class="headerlink" href="#install-pre-commit" title="Permalink to this heading">#</a></h2>
 <p>pre-commit is one of those rare tools we recommend to make
@@ -446,9 +447,9 @@ We create this file in the root directory of our repository.</p>
 provided by the pre-commit project itself. The third one is
 provided by Igor Shubovych and covers the linting of
 markdown files, e.g. the ‘README’ file.</p>
-<p>That’s a typical setup. You will find a lot of useful hooks
-from various sources. You could write your own hooks but
-that’s a topic for another day.</p>
+<p>The combination of hooks from various sources is a typical setup.
+You will find a lot of useful hooks floating around.
+You could write your own hooks but that’s a topic for another day.</p>
 <p>You could take inspiration from the
 <a class="reference external" href="https://pre-commit.com/hooks.html">pre-commit marketplace</a>.
 It helps to study large projects like the pandas
@@ -461,7 +462,7 @@ your work. You can either install them via</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
 </pre></div>
 </div>
-<p>and then run repeated attempts to commit your code or you
+<p>and then run repeated attempts to commit your code, or you
 could include a dedicated job in your Makefile for this, e.g.</p>
 <div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nv">.DEFAULT_GOAL</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>compile
 
@@ -494,7 +495,6 @@ However, you can check on them within a workflow.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pre-commit</span>
 
 <span class="nt">on</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">push</span><span class="p">:</span>
 
 <span class="nt">jobs</span><span class="p">:</span>
@@ -518,6 +518,9 @@ the pre-commit hooks.</p>
 </section>
 <section id="further-reading">
 <h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pre-commit.com/">pre-commit</a></p></li>
+</ul>
 </section>
 </section>
 
