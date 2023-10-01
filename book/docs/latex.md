@@ -4,7 +4,7 @@ We intend to compile a '.tex' file after each commit and make
 the resulting '.pdf' document available on a draft branch.
 Linking from your README file to this branch will
 simplify sharing your work with others. Your '.pdf' file
-is not some historic snapshot of your work but a living document
+is **not** some historic snapshot of your work but a living document
 updated with each commit. Interested readers do not have
 to clone your repository and compile the document locally.
 At the same time you are warned if your changes break
@@ -153,7 +153,7 @@ The README file is the main entry point for any repository.
 This paper is about ...
 ```
 
-This will create a Headline with a link to your pdf file
+This will create a headline with a link to your pdf file
 on the draft branch.
 
 ## Use a centralized workflow
@@ -202,3 +202,7 @@ We have touched [tectonic](https://tectonic-typesetting.github.io/en-US/)
 and have successfully applied it for various repositories at Stanford
 University. In particular, we point the reader to the lecture notes by
 [Michael Howes](https://github.com/Michael-Howes/first-year-stats-notes).
+
+The repository for the paper
+[Taming a Hydra of singularities](https://github.com/tschm/hydra)
+is taking full advantage of the workflow described above.
