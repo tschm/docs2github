@@ -1,0 +1,3 @@
+# Bash magic
+
+Use bash
