@@ -37,4 +37,3 @@ repos:
 
       - id: check-github-workflows
         args: ["--verbose"]
-
